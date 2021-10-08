@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "juna",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}
