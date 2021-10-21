@@ -39,6 +39,12 @@
           <span class="train-schedule">
             {{ formatTime(findDeparture(train.timeTableRows).scheduledTime) }}
           </span>
+<<<<<<< HEAD
+=======
+            <span class="train-live-schedule" v-if="findDeparture(train.timeTableRows).liveEstimateTime">
+            {{ "~" + formatTime(findDeparture(train.timeTableRows).liveEstimateTime) }}
+          </span>
+>>>>>>> 0625da9 (aikataulumuutokset punaisella ja ionic kokeiluja)
         </template>
       </div>
     </template>
@@ -60,9 +66,12 @@ export default {
     };
   },
   methods: {
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 0625da9 (aikataulumuutokset punaisella ja ionic kokeiluja)
     refreshTrains() {
       if (this.departureStation) {
         let departureStation = this.departureStation;
@@ -140,4 +149,13 @@ export default {
   font-weight: bold;
   padding: 6px;
 }
+<<<<<<< HEAD
+=======
+.train-live-schedule {
+  color: rgb(241, 7, 7);
+  font-size: 16px;
+  font-weight: bold;
+  padding: 6px;
+}
+>>>>>>> 0625da9 (aikataulumuutokset punaisella ja ionic kokeiluja)
 </style>
