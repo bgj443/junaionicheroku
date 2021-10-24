@@ -14,20 +14,41 @@
     </select>
     <span class="train-category-filter">
       <label for="commuter">Lähijunat</label>
-      <input type="checkbox" id="commuter" value="Commuter" v-model="trainCategories" @change="refreshTrains">
+      <input
+        type="checkbox"
+        id="commuter"
+        value="Commuter"
+        v-model="trainCategories"
+        @change="refreshTrains"
+      />
       <label for="commuter">Kaukojunat</label>
-      <input type="checkbox" id="long-distance" value="Long-distance" v-model="trainCategories" @change="refreshTrains">
+      <input
+        type="checkbox"
+        id="long-distance"
+        value="Long-distance"
+        v-model="trainCategories"
+        @change="refreshTrains"
+      />
     </span>
     <template v-if="trains.length">
       <div v-for="(train, i) in trains" v-bind:key="i">
-        <template v-if="findDeparture(train.timeTableRows) && trainCategories.includes(train.trainCategory)">
+        <template
+          v-if="
+            findDeparture(train.timeTableRows) &&
+            trainCategories.includes(train.trainCategory)
+          "
+        >
           <span class="train-type">{{
-            train.commuterLineID ? train.commuterLineID : train.trainType + train.trainNumber
+            train.commuterLineID
+              ? train.commuterLineID
+              : train.trainType + train.trainNumber
           }}</span>
           <span class="train-destination" v-if="train.timeTableRows.length">
             {{
-              findStationName(train.timeTableRows[train.timeTableRows.length - 1]
-                .stationShortCode)
+              findStationName(
+                train.timeTableRows[train.timeTableRows.length - 1]
+                  .stationShortCode
+              )
             }}
           </span>
           <span class="train-track">
@@ -39,6 +60,19 @@
           <span class="train-schedule">
             {{ formatTime(findDeparture(train.timeTableRows).scheduledTime) }}
           </span>
+          <span
+            class="train-live-schedule"
+            v-if="findDeparture(train.timeTableRows).liveEstimateTime"
+          >
+            {{
+              "~" +
+              formatTime(findDeparture(train.timeTableRows).liveEstimateTime)
+            }}
+          </span>
+          <Compositions
+            :date="train.departureDate"
+            :trainNumber="train.trainNumber"
+          ></Compositions>
         </template>
       </div>
     </template>
@@ -48,7 +82,11 @@
 <script>
 import getTrainsByStation from "../services/getTrainsByStation";
 import getStations from "../services/getStations";
+import Compositions from "./Compositions";
 export default {
+  components: {
+    Compositions,
+  },
   data() {
     return {
       departureStation: "",
@@ -56,22 +94,27 @@ export default {
       trains: [],
       stations: ["stationShortCode", "stationName"],
       headers: [],
-      trainCategories: ["Commuter", "Long-distance"]
+      trainCategories: ["Commuter", "Long-distance"],
     };
   },
   methods: {
-
-
-
     refreshTrains() {
       if (this.departureStation) {
         let departureStation = this.departureStation;
         getTrainsByStation(this.departureStation).then(
-          (data) => (this.trains = data.sort(function compare(a, b) {
-            let indexA = a.timeTableRows.findIndex((el) => el.stationShortCode == departureStation);
-            let indexB = b.timeTableRows.findIndex((el) => el.stationShortCode == departureStation);
-            return new Date(a.timeTableRows[indexA].scheduledTime) - new Date(b.timeTableRows[indexB].scheduledTime);
-          }))
+          (data) =>
+            (this.trains = data.sort(function compare(a, b) {
+              let indexA = a.timeTableRows.findIndex(
+                (el) => el.stationShortCode == departureStation
+              );
+              let indexB = b.timeTableRows.findIndex(
+                (el) => el.stationShortCode == departureStation
+              );
+              return (
+                new Date(a.timeTableRows[indexA].scheduledTime) -
+                new Date(b.timeTableRows[indexB].scheduledTime)
+              );
+            }))
         );
       }
     },
@@ -95,16 +138,14 @@ export default {
     },
     findStationName(stationShort) {
       let stationName = this.stations.find(
-        (el) =>
-          el.stationShortCode == stationShort
+        (el) => el.stationShortCode == stationShort
       );
       return stationName.stationName.split(" ")[0];
-  },
+    },
   },
   mounted() {
     getStations().then((data) => (this.stations = data));
   },
-  
 };
 </script>
 
@@ -136,6 +177,12 @@ export default {
 }
 .train-schedule {
   color: black;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 6px;
+}
+.train-live-schedule {
+  color: rgb(241, 7, 7);
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
