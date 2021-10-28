@@ -283,39 +283,41 @@ export default {
 </script>
 
 <style>
+a {
+  text-decoration: none;
+}
 .train-type {
   display: inline-block;
   border-radius: 50%;
   min-width: 30px;
   height: 30px;
-  background: black;
-  color: white;
+  background: var(--ion-color-dark);
+  color: var(--ion-color-light);
   font-size: 16px;
   line-height: 30px;
-  font-weight: bold;
   text-align: center;
   padding: 6px;
 }
 .train-destination {
-  color: white;
+  color: var(--ion-color-dark);
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
 }
 .train-track {
-  color: white;
+  color: var(--ion-color-dark);
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
 }
 .train-schedule {
-  color: white;
+  color: var(--ion-color-dark);
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
 }
 .train-live-schedule {
-  color: rgb(241, 7, 7);
+  color: var(--ion-color-danger);
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
