@@ -1,17 +1,31 @@
 <template>
   <div>
-    <select v-model="departureStation" @change="refreshTrains">
-      <option selected disabled></option>
+    <ion-searchbar 
+      placeholder="Hae asemaa" 
+      show-cancel-button="always"  
+      @ionFocus="showStationList = true"
+      @ionCancel="showStationList = false"
+      @ionChange="updateSearch($event)">
+    </ion-searchbar>
+    <ion-list v-if="showStationList == true">
       <template v-for="(station, i) in stations">
-        <option
+        <ion-item button @click="departureStation = station.stationShortCode; refreshTrains(); showStationList = false"
           v-bind:key="'station' + i"
           :value="station.stationShortCode"
           v-if="station.passengerTraffic === true"
         >
           {{ station.stationName }}
-        </option>
+        </ion-item>
       </template>
-    </select>
+    </ion-list>
+    <ion-segment value="departures" @ionChange="showTable($event)">
+      <ion-segment-button value="departures">
+        <ion-label>Lähtevät</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="arrivals">
+        <ion-label>Saapuvat</ion-label>
+      </ion-segment-button>
+    </ion-segment>
     <span class="train-category-filter">
       <label for="commuter">Lähijunat</label>
       <input
@@ -31,49 +45,90 @@
       />
     </span>
     <template v-if="trains.length">
-      <div v-for="(train, i) in trains" v-bind:key="i">
-        <template
-          v-if="
-            findDeparture(train.timeTableRows) &&
-            trainCategories.includes(train.trainCategory)
-          "
-        >
-          <span class="train-type">{{
-            train.commuterLineID
-              ? train.commuterLineID
-              : train.trainType + train.trainNumber
-          }}</span>
-          <span class="train-destination" v-if="train.timeTableRows.length">
-            {{
-              findStationName(
-                train.timeTableRows[train.timeTableRows.length - 1]
-                  .stationShortCode
-              )
-            }}
-          </span>
-          <span class="train-track">
-            {{ findDeparture(train.timeTableRows).commercialTrack }}
-          </span>
-          <span class="train-schedule">
-            {{ formatDate(findDeparture(train.timeTableRows).scheduledTime) }}
-          </span>
-          <span class="train-schedule">
-            {{ formatTime(findDeparture(train.timeTableRows).scheduledTime) }}
-          </span>
-          <span
-            class="train-live-schedule"
-            v-if="findDeparture(train.timeTableRows).liveEstimateTime"
+      <!--Lähtevät-->
+      <div v-if="showTables.includes('departures')">
+        <div class="departure-table" v-for="(train, i) in trains" v-bind:key="i">
+          <template
+            v-if="
+              findDeparture(train.timeTableRows) &&
+              trainCategories.includes(train.trainCategory)
+            "
           >
-            {{
-              "~" +
-              formatTime(findDeparture(train.timeTableRows).liveEstimateTime)
-            }}
-          </span>
-          <Compositions
-            :date="train.departureDate"
-            :trainNumber="train.trainNumber"
-          ></Compositions>
-        </template>
+            <span class="train-type">{{
+              train.commuterLineID
+                ? train.commuterLineID
+                : train.trainType + train.trainNumber
+            }}</span>
+            <span class="train-destination" v-if="train.timeTableRows.length">
+              {{
+                findStationName(
+                  train.timeTableRows[train.timeTableRows.length - 1]
+                    .stationShortCode
+                )
+              }}
+            </span>
+            <span class="train-track">
+              {{ findDeparture(train.timeTableRows).commercialTrack }}
+            </span>
+            <span class="train-schedule">
+              {{ formatDate(findDeparture(train.timeTableRows).scheduledTime) }}
+            </span>
+            <span class="train-schedule">
+              {{ formatTime(findDeparture(train.timeTableRows).scheduledTime) }}
+            </span>
+            <span
+              class="train-live-schedule"
+              v-if="findDeparture(train.timeTableRows).liveEstimateTime"
+            >
+              {{
+                "~" +
+                formatTime(findDeparture(train.timeTableRows).liveEstimateTime)
+              }}
+            </span>
+            <Compositions
+              :date="train.departureDate"
+              :trainNumber="train.trainNumber"
+            ></Compositions>
+          </template>
+        </div>
+      </div>
+      <!--Saapuvat-->
+      <div v-if="showTables.includes('arrivals')">
+        <div class="arrival-table" v-for="(train, i) in trains" v-bind:key="i">
+          <template v-if="findArrival(train.timeTableRows) && trainCategories.includes(train.trainCategory)">
+            <span class="train-type">{{
+                train.commuterLineID ? train.commuterLineID : train.trainType + train.trainNumber
+              }}</span>
+            <span class="train-destination" v-if="train.timeTableRows.length">
+              {{
+                findStationName(train.timeTableRows[train.timeTableRows.length - 1]
+                    .stationShortCode)
+              }}
+            </span>
+            <span class="train-track">
+              {{ findArrival(train.timeTableRows).commercialTrack }}
+            </span>
+            <span class="train-schedule">
+              {{ formatDate(findArrival(train.timeTableRows).scheduledTime) }}
+            </span>
+            <span class="train-schedule">
+              {{ formatTime(findArrival(train.timeTableRows).scheduledTime) }}
+            </span>
+            <span
+              class="train-live-schedule"
+              v-if="findArrival(train.timeTableRows).liveEstimateTime"
+            >
+              {{
+                "~" +
+                formatTime(findArrival(train.timeTableRows).liveEstimateTime)
+              }}
+            </span>
+            <Compositions
+              :date="train.departureDate"
+              :trainNumber="train.trainNumber"
+            ></Compositions>
+          </template>
+        </div>
       </div>
     </template>
   </div>
@@ -83,9 +138,26 @@
 import getTrainsByStation from "../services/getTrainsByStation";
 import getStations from "../services/getStations";
 import Compositions from "./Compositions";
+import {
+    IonSegment,
+    IonLabel,
+    IonSegmentButton,
+    IonSearchbar,
+
+    IonList,
+    IonItem
+} from "@ionic/vue";
+
 export default {
   components: {
     Compositions,
+    IonSegment,
+    IonLabel,
+    IonSegmentButton,
+    IonSearchbar,
+
+    IonList,
+    IonItem,
   },
   data() {
     return {
@@ -95,6 +167,8 @@ export default {
       stations: ["stationShortCode", "stationName"],
       headers: [],
       trainCategories: ["Commuter", "Long-distance"],
+      showTables: ["departures"],
+      showStationList: false
     };
   },
   methods: {
@@ -125,6 +199,13 @@ export default {
       );
       return departure;
     },
+    findArrival(timetable) {
+      let arrival = timetable.find(
+        (el) =>
+          el.stationShortCode == this.departureStation && el.type == "ARRIVAL"
+      );
+      return arrival;
+    },
     formatDate(value) {
       let formatted = new Date(value).toLocaleDateString("fi-fi");
       return formatted;
@@ -142,6 +223,21 @@ export default {
       );
       return stationName.stationName.split(" ")[0];
     },
+    showTable(event) {
+      event.detail.value == "arrivals"
+      ? this.showTables = ["arrivals"]
+      : this.showTables = ["departures"]
+    },
+    updateSearch(event) {
+      let items = Array.from(document.querySelector('ion-list').children);
+      let query = event.target.value.toLowerCase();
+      requestAnimationFrame(() => {
+        items.forEach(item => {
+          let shouldShow = item.textContent.toLowerCase().indexOf(query) > -1;
+          item.style.display = shouldShow ? 'block' : 'none';
+        });
+      });
+    }
   },
   mounted() {
     getStations().then((data) => (this.stations = data));
@@ -164,19 +260,19 @@ export default {
   padding: 6px;
 }
 .train-destination {
-  color: black;
+  color: white;
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
 }
 .train-track {
-  color: black;
+  color: white;
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
 }
 .train-schedule {
-  color: black;
+  color: white;
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
@@ -187,4 +283,5 @@ export default {
   font-weight: bold;
   padding: 6px;
 }
+
 </style>
