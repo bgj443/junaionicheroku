@@ -38,6 +38,7 @@
             trainCategories.includes(train.trainCategory)
           "
         >
+<<<<<<< Updated upstream
           <span class="train-type">{{
             train.commuterLineID
               ? train.commuterLineID
@@ -74,6 +75,134 @@
             :trainNumber="train.trainNumber"
           ></Compositions>
         </template>
+=======
+          <template
+            v-if="
+              findDeparture(train.timeTableRows) &&
+                trainCategories.includes(train.trainCategory)
+            "
+          >
+            <router-link
+              :to="
+                '/tabs/tab3/' + train.departureDate + '/' + train.trainNumber
+              "
+            >
+              <span class="train-type">{{
+                train.commuterLineID
+                  ? train.commuterLineID
+                  : train.trainType + train.trainNumber
+              }}</span>
+              <span class="train-destination" v-if="train.timeTableRows.length">
+                {{
+                  findStationName(
+                    train.timeTableRows[train.timeTableRows.length - 1]
+                      .stationShortCode
+                  )
+                }}
+              </span>
+              <span class="train-track">
+                {{ findDeparture(train.timeTableRows).commercialTrack }}
+              </span>
+              <span class="train-schedule">
+                {{
+                  formatDate(findDeparture(train.timeTableRows).scheduledTime)
+                }}
+              </span>
+              <span class="train-schedule" v-if="train.cancelled == false">
+                {{
+                  formatTime(findDeparture(train.timeTableRows).scheduledTime)
+                }}
+              </span>
+              <span class="train-live-schedule" v-else>
+                {{'Peruttu'}}
+              </span>
+              <span
+                class="train-live-schedule"
+                v-if="
+                  findDeparture(train.timeTableRows).liveEstimateTime &&
+                    formatTime(
+                      findDeparture(train.timeTableRows).liveEstimateTime
+                    ) !=
+                      formatTime(
+                        findDeparture(train.timeTableRows).scheduledTime
+                      )
+                "
+              >
+                {{
+                  "~" +
+                    formatTime(
+                      findDeparture(train.timeTableRows).liveEstimateTime
+                    )
+                }}
+              </span>
+            </router-link>
+          </template>
+        </div>
+      </div>
+      <!--Saapuvat-->
+      <div v-if="showTables.includes('arrivals')">
+        <div class="arrival-table" v-for="(train, i) in trains" v-bind:key="i">
+          <template
+            v-if="
+              findArrival(train.timeTableRows) &&
+                trainCategories.includes(train.trainCategory)
+            "
+          >
+            <router-link
+              :to="
+                '/tabs/tab3/' + train.departureDate + '/' + train.trainNumber
+              "
+            >
+              <span class="train-type">{{
+                train.commuterLineID
+                  ? train.commuterLineID
+                  : train.trainType + train.trainNumber
+              }}</span>
+              <span class="train-destination" v-if="train.timeTableRows.length">
+                {{
+                  findStationName(
+                    train.timeTableRows[train.timeTableRows.length - 1]
+                      .stationShortCode
+                  )
+                }}
+              </span>
+              <span class="train-track">
+                {{ findArrival(train.timeTableRows).commercialTrack }}
+              </span>
+              <span class="train-schedule">
+                {{ formatDate(findArrival(train.timeTableRows).scheduledTime) }}
+              </span>
+              <span class="train-schedule" v-if="train.cancelled == false">
+                {{
+                  formatTime(findArrival(train.timeTableRows).scheduledTime)
+                }}
+              </span>
+              <span class="train-live-schedule" v-else>
+                {{'Peruttu'}}
+              </span>
+              <span
+                class="train-live-schedule"
+                v-if="
+                  findArrival(train.timeTableRows).liveEstimateTime &&
+                    formatTime(
+                      findArrival(train.timeTableRows).liveEstimateTime
+                    ) !=
+                      formatTime(
+                        findArrival(train.timeTableRows).scheduledTime
+                      )
+                "
+              >
+                {{
+                  "~" +
+                    formatTime(
+                      findArrival(train.timeTableRows).liveEstimateTime
+                    )
+                }}
+              </span>
+            </router-link>
+          </template>
+        </div>
+>>>>>>> Stashed changes
       </div>
     </template>
   </div>
