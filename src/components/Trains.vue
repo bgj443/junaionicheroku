@@ -91,10 +91,13 @@
                   formatDate(findDeparture(train.timeTableRows).scheduledTime)
                 }}
               </span>
-              <span class="train-schedule">
+              <span class="train-schedule" v-if="train.cancelled == false">
+
                 {{
                   formatTime(findDeparture(train.timeTableRows).scheduledTime)
                 }}
+              <span class="train-live-schedule" v-else>
+                {{'Peruttu'}}
               </span>
               <span
                 class="train-live-schedule"
@@ -152,12 +155,25 @@
               <span class="train-schedule">
                 {{ formatDate(findArrival(train.timeTableRows).scheduledTime) }}
               </span>
-              <span class="train-schedule">
-                {{ formatTime(findArrival(train.timeTableRows).scheduledTime) }}
+              <span class="train-schedule" v-if="train.cancelled == false">
+                {{
+                  formatTime(findArrival(train.timeTableRows).scheduledTime)
+                }}
+              </span>
+              <span class="train-live-schedule" v-else>
+                {{'Peruttu'}}
               </span>
               <span
                 class="train-live-schedule"
-                v-if="findArrival(train.timeTableRows).liveEstimateTime"
+                v-if="
+                  findArrival(train.timeTableRows).liveEstimateTime &&
+                    formatTime(
+                      findArrival(train.timeTableRows).liveEstimateTime
+                    ) !=
+                      formatTime(
+                        findArrival(train.timeTableRows).scheduledTime
+                      )
+                "
               >
                 {{
                   "~" +
@@ -185,14 +201,12 @@ import {
   IonList,
   IonItem,
 } from "@ionic/vue";
-
 export default {
   components: {
     IonSegment,
     IonLabel,
     IonSegmentButton,
     IonSearchbar,
-
     IonList,
     IonItem,
   },
