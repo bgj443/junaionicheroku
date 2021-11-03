@@ -92,10 +92,10 @@
                 }}
               </span>
               <span class="train-schedule" v-if="train.cancelled == false">
+
                 {{
                   formatTime(findDeparture(train.timeTableRows).scheduledTime)
                 }}
-              </span>
               <span class="train-live-schedule" v-else>
                 {{'Peruttu'}}
               </span>
