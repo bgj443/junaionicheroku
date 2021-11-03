@@ -92,12 +92,12 @@
                 }}
               </span>
               <span class="train-schedule" v-if="train.cancelled == false">
-
                 {{
                   formatTime(findDeparture(train.timeTableRows).scheduledTime)
                 }}
+              </span>
               <span class="train-live-schedule" v-else>
-                {{'Peruttu'}}
+                {{ "Peruttu" }}
               </span>
               <span
                 class="train-live-schedule"
@@ -156,12 +156,10 @@
                 {{ formatDate(findArrival(train.timeTableRows).scheduledTime) }}
               </span>
               <span class="train-schedule" v-if="train.cancelled == false">
-                {{
-                  formatTime(findArrival(train.timeTableRows).scheduledTime)
-                }}
+                {{ formatTime(findArrival(train.timeTableRows).scheduledTime) }}
               </span>
               <span class="train-live-schedule" v-else>
-                {{'Peruttu'}}
+                {{ "Peruttu" }}
               </span>
               <span
                 class="train-live-schedule"
@@ -170,9 +168,7 @@
                     formatTime(
                       findArrival(train.timeTableRows).liveEstimateTime
                     ) !=
-                      formatTime(
-                        findArrival(train.timeTableRows).scheduledTime
-                      )
+                      formatTime(findArrival(train.timeTableRows).scheduledTime)
                 "
               >
                 {{
