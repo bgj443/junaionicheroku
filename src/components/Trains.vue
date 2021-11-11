@@ -34,22 +34,26 @@
       </ion-segment-button>
     </ion-segment>
     <span class="train-category-filter">
-      <label for="commuter">Lähijunat</label>
-      <input
-        type="checkbox"
-        id="commuter"
-        value="Commuter"
-        v-model="trainCategories"
-        @change="refreshTrains"
-      />
-      <label for="commuter">Kaukojunat</label>
-      <input
-        type="checkbox"
-        id="long-distance"
-        value="Long-distance"
-        v-model="trainCategories"
-        @change="refreshTrains"
-      />
+      <ion-chip @click="updateFilter('Commuter')">
+        <input
+          type="checkbox"
+          id="commuter"
+          value="Commuter"
+          v-model="trainCategories"
+          @change="refreshTrains"
+        />
+        <ion-label>Lähijunat</ion-label>
+      </ion-chip>
+      <ion-chip @click="updateFilter('Long-distance')">
+        <input
+          type="checkbox"
+          id="long-distance"
+          value="Long-distance"
+          v-model="trainCategories"
+          @change="refreshTrains"
+        />
+        <ion-label>Kaukojunat</ion-label>
+      </ion-chip>
     </span>
     <template v-if="trains.length">
       <!--Lähtevät-->
@@ -62,7 +66,9 @@
           <template
             v-if="
               findDeparture(train.timeTableRows) &&
-                trainCategories.includes(train.trainCategory)
+                trainCategories.includes(train.trainCategory) &&
+                findDeparture(train.timeTableRows).scheduledTime >= 
+                (new Date().toISOString())
             "
           >
             <router-link
@@ -196,6 +202,7 @@ import {
   IonSearchbar,
   IonList,
   IonItem,
+  IonChip
 } from "@ionic/vue";
 export default {
   components: {
@@ -205,6 +212,7 @@ export default {
     IonSearchbar,
     IonList,
     IonItem,
+    IonChip
   },
   data() {
     return {
@@ -285,6 +293,11 @@ export default {
         });
       });
     },
+    updateFilter(value) {
+      this.trainCategories.includes(value)
+      ? this.trainCategories = this.trainCategories.filter(e => e !== value)
+      : this.trainCategories.push(value)
+    }
   },
   mounted() {
     getStations().then((data) => (this.stations = data));
@@ -331,5 +344,8 @@ a {
   font-size: 16px;
   font-weight: bold;
   padding: 6px;
+}
+ion-chip > ion-label {
+  padding: 5px;
 }
 </style>
