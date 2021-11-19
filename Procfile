@@ -1,1 +1,1 @@
-web: ionic serve junaionic --port $PORT --nobrowoser -- noliverload --noopen
+web:ionic serve junaionic --port $PORT --nobrowoser -- noliverload --noopen
